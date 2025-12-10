@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lingasamudram Cricket Tournament</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+  <div class="background"></div>
+  <!-- Organisers Floating Circle -->
+  <div id="organisersCircle" class="organisers-circle" title="Show Tournament Details">
+    <span style="font-size:2rem;color:#fff;">&#9660;</span>
+  </div>
+  <div id="organisersTooltip" class="organisers-tooltip" style="display:none;">
+    <div style="font-size:1.1rem;font-weight:bold;margin-bottom:6px;color:#b71c1c;">Organisers</div>
+    <div style="font-size:1rem;margin-bottom:4px;">Chandu : <a href="tel:8639015104" style="color:#125ea2;text-decoration:none;">8639015104</a></div>
+    <div style="font-size:1rem;margin-bottom:10px;">Etish : <a href="tel:917893319150" style="color:#125ea2;text-decoration:none;">917893319150</a></div>
+    <div style="border-top:1px solid #eee;margin:10px 0 8px 0;"></div>
+    <div style="font-size:1.08rem;font-weight:bold;color:#125ea2;margin-bottom:6px;">Tournament Details</div>
+    <ul style="font-size:0.98rem;color:#222;padding-left:18px;margin:0 0 8px 0;">
+      <li>Ball Type: <b>Red Vickey cork ball</b> (teams' responsibility)</li>
+      <li>Live stream for every match</li>
+      <li>Man of the Match, Man of the Series, Best Bowler, Best Batsman trophies</li>
+      <li>Scores updated daily on <b>Cricheros app</b></li>
+      <li>Registrations open till <b>December 30</b></li>
+    </ul>
+  </div>
+  <!-- Simple messaging popup for Entry Fee and Prize Money -->
+  <div id="prizePopup" class="prize-popup" style="display:block;">
+    <div style="font-size:1.08rem;font-weight:bold;color:#ffd700;margin-bottom:6px;">Tournament Entry & Prizes</div>
+    <div style="font-size:1rem;margin-bottom:4px;">Entry Fee: <b style="color:#ffd700;">₹2000/-</b></div>
+    <div style="font-size:1rem;margin-bottom:4px;">Prize Money:</div>
+    <ul style="font-size:0.98rem;color:#ffd700;padding-left:18px;margin:0 0 8px 0;">
+      <li>Winners: <b style="color:#ffd700;">₹50,000/-</b></li>
+      <li>Runners: <b style="color:#ffd700;">₹25,000/-</b></li>
+    </ul>
+  </div>
+  <div class="container">
+    <h1>Lingasamudram Cricket Tournament</h1>
+    <nav>
+      <button onclick="showTab('addTeam')">Add Team</button>
+      <button onclick="showTab('teamsRegistered')">Teams Registered</button>
+      <button onclick="showTab('archives')">Archives</button>
+      <button onclick="showTab('schedule')">Schedule</button>
+      <button onclick="showTab('liveMatch')">Match Live</button>
+      <button onclick="showTab('liveScore')">Live Score</button>
+      <button id="adminPanelBtn" onclick="openAdminPanel()">Admin Panel</button>
+    </nav>
+    <div id="addTeam" class="tab-content"></div>
+    <div id="teamsRegistered" class="tab-content" style="display:none"></div>
+    <div id="archives" class="tab-content" style="display:none">
+      <button onclick="showArchiveTab('images')">Images</button>
+      <button onclick="showArchiveTab('videos')">Videos</button>
+      <div id="archive-images" class="archive-tab-content"></div>
+      <div id="archive-videos" class="archive-tab-content" style="display:none"></div>
+    </div>
+    <div id="schedule" class="tab-content" style="display:none">
+      <h2>Schedule</h2>
+      <p>Coming soon...</p>
+    </div>
+    <div id="liveMatch" class="tab-content" style="display:none">
+      <h2>Live Match</h2>
+      <a href="https://www.youtube.com/@chlivestreaming13" target="_blank">Click Here to Watch Live Match</a>
+      </div>
+      <div id="liveScore" class="tab-content" style="display:none">
+        <h2 style="color:#ffd700;font-size:2rem;margin-bottom:12px;">Live Score</h2>
+        <div style="background:#222;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.18);padding:18px 12px;max-width:420px;margin:0 auto;text-align:center;">
+          <p style="color:#ffd700;font-size:1.1rem;margin-bottom:16px;">Click below to view live scores for Lingasamudram Cricket Tournament 2026:</p>
+          <a href="https://cricheroes.com/tournament/1726202/lingasamudram-26th-cricket-tournament-2k26/matches/live-matches" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#ffd700 0%,#125ea2 100%);color:#222;font-weight:bold;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:1.15rem;box-shadow:0 2px 12px rgba(0,0,0,0.18);transition:background 0.2s;">View Live Scores</a>
+        </div>
+      </div>
+    </div>
+    <!-- Admin Panel Modal -->
+    <div id="adminPanelModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <span class="close" onclick="closeAdminPanel()">&times;</span>
+        <h2>Admin Panel</h2>
+        <div id="adminPincodeSection">
+          <label for="adminPincodeInput">Enter Admin Pincode:</label>
+          <input type="password" id="adminPincodeInput" maxlength="6" />
+          <button onclick="verifyAdminPincode()">Submit</button>
+          <div id="adminPincodeError" style="color:red; margin-top:10px;"></div>
+        </div>
+        <div id="adminControls" style="display:none;">
+          <!-- Place admin-only controls here, e.g. edit lock, pool management, etc. -->
+          <button id="exportTeamsBtn" onclick="exportTeamsToExcel()" style="margin-bottom:16px;">Export Registered Teams to Excel</button>
+          <div id="adminFeatures"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-bar">
+    <span>Stay Tuned for First Match of Lingasamudram Cricket Tournament</span>
+  </div>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var circle = document.getElementById('organisersCircle');
+      var tooltip = document.getElementById('organisersTooltip');
+      circle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        tooltip.style.display = tooltip.style.display === 'block' ? 'none' : 'block';
+      });
+      // Hide tooltip when clicking outside
+      document.addEventListener('click', function(e) {
+        if (tooltip.style.display === 'block') tooltip.style.display = 'none';
+      });
+    });
+  </script>
+</body>
+</html>
