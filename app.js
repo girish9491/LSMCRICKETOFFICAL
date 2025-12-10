@@ -25,6 +25,9 @@ function openAdminPanel() {
   document.getElementById('adminControls').style.display = 'none';
   document.getElementById('adminPincodeInput').value = '';
   document.getElementById('adminPincodeError').innerText = '';
+  // Hide prize popup when admin panel is opened
+  var prizePopup = document.getElementById('prizePopup');
+  if (prizePopup) prizePopup.style.display = 'none';
 }
 
 function closeAdminPanel() {
@@ -75,6 +78,8 @@ function showPoolManagement() {
 let currentTabId = null;
 function showTab(tabId) {
   var prizePopup = document.getElementById('prizePopup');
+  // Close admin panel when any tab button is clicked
+  closeAdminPanel();
   if (currentTabId === tabId) {
     // If the same tab is clicked again, minimize/hide it
     document.getElementById(tabId).style.display = 'none';
@@ -89,6 +94,10 @@ function showTab(tabId) {
   if (prizePopup) prizePopup.style.display = 'none';
   if(tabId === 'addTeam') renderAddTeamForm();
   if(tabId === 'teamsRegistered') renderTeamsRegistered();
+  if(tabId === 'archives') {
+    renderArchiveImages();
+    renderArchiveVideos();
+  }
 }
 function showArchiveTab(tab) {
   document.getElementById('archive-images').style.display = tab === 'images' ? 'block' : 'none';
@@ -128,10 +137,6 @@ function renderAddTeamForm() {
       document.getElementById('teamFormMsg').innerText = 'All fields are required!';
       return;
     }
-    if(!players.includes(captain)) {
-      document.getElementById('teamFormMsg').innerText = 'Captain must be one of the players!';
-      return;
-    }
     try {
       await database.ref('teams').push({ teamName, captain, captainNumber, players });
       document.getElementById('teamFormMsg').innerText = 'Team registered successfully!';
@@ -158,11 +163,50 @@ function renderTeamsRegistered() {
       if (isAdmin) {
         deleteBtn = `<button style='margin-left:16px;background:#b71c1c;color:#fff;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-weight:bold;' onclick="deleteTeam('${teamKey}')">Delete</button>`;
       }
+      let playersHtml = '';
+      if (isAdmin && !editLock) {
+        // Editable player names
+        playersHtml = `<form id="editPlayersForm-${teamKey}" style="display:inline;">`;
+        filteredPlayers.forEach((player, idx) => {
+          playersHtml += `<input type="text" name="player${idx}" value="${player}" style="margin:2px 6px 2px 0;padding:2px 6px;border-radius:4px;border:1px solid #ccc;max-width:110px;">`;
+        });
+        playersHtml += `<button type="submit" style="margin-left:8px;background:#125ea2;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:bold;">Save</button></form>`;
+      } else {
+        // Plain text player names
+        playersHtml = `<span style="color:#fff;">Players: ${filteredPlayers.join(', ')}</span>`;
+      }
       teamsList.innerHTML += `<li style="background:rgba(20,20,40,0.65);color:#fff;padding:10px 18px;margin-bottom:12px;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,0.18);">
         <span style="font-size:1.3em;font-weight:bold;color:#ffd700;">${team.teamName}</span> <span style="color:#90caf9;">(Captain: ${team.captain}${team.captainNumber ? ', ' + team.captainNumber : ''})</span><br>
-        <span style="color:#fff;">Players: ${filteredPlayers.join(', ')}</span>
+        ${playersHtml}
         ${deleteBtn}
       </li>`;
+      // Add save handler for each form
+      if (isAdmin && !editLock) {
+        setTimeout(() => {
+          const form = document.getElementById(`editPlayersForm-${teamKey}`);
+          if (form) {
+            form.onsubmit = function(e) {
+              e.preventDefault();
+              const newPlayers = [];
+              for (let i = 0; i < filteredPlayers.length; i++) {
+                newPlayers.push(form[`player${i}`].value.trim());
+              }
+              // Add captain back to the players array
+              const updatedPlayers = [team.captain, ...newPlayers];
+              database.ref('teams/' + teamKey + '/players').set(updatedPlayers)
+                .then(() => {
+                  // After save, temporarily lock editing for this team to show names only
+                  editLock = true;
+                  renderTeamsRegistered();
+                  setTimeout(() => { editLock = false; }, 500); // unlock after short delay for other teams
+                })
+                .catch(() => {
+                  alert('Error saving players.');
+                });
+            };
+          }
+        }, 0);
+      }
     });
     if(!snapshot.exists()) teamsList.innerHTML = '<li>No teams registered yet.</li>';
   });
@@ -225,12 +269,6 @@ function renderArchiveVideos() {
 }
 
 // Call these when switching archive tabs
-function showArchiveTab(tab) {
-  document.getElementById('archive-images').style.display = tab === 'images' ? 'block' : 'none';
-  document.getElementById('archive-videos').style.display = tab === 'videos' ? 'block' : 'none';
-  if(tab === 'images') renderArchiveImages();
-  if(tab === 'videos') renderArchiveVideos();
-}
 
 // Hide all tab-content by default on load
 
