@@ -36,7 +36,7 @@ function closeAdminPanel() {
 
 function verifyAdminPincode() {
   const pin = document.getElementById('adminPincodeInput').value;
-  if (pin === '924833') {
+  if (pin === 'sunmoonstars') {
     isAdmin = true;
     document.getElementById('adminPincodeSection').style.display = 'none';
     document.getElementById('adminControls').style.display = 'block';
@@ -297,5 +297,6 @@ function exportTeamsToExcel() {
     URL.revokeObjectURL(url);
   });
 }
+
 
 
