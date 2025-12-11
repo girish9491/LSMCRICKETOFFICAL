@@ -1,3 +1,11 @@
+/* Organisers minimizable popup (right) */
+.organisers-popup-min {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: 56px !important;
+  padding-bottom: 0 !important;
+  overflow: hidden !important;
+}
 /* Simple messaging popup for Entry Fee and Prize Money */
 .prize-popup {
   position: fixed;
@@ -16,41 +24,42 @@
   text-align: left;
 }
 /* Organisers floating circle and tooltip */
-.organisers-circle {
+/* Organisers & Tournament Details Popup */
+.organisers-popup {
   position: fixed;
-  top: 82px;
+  top: 32px;
   right: 32px;
-  width: 54px;
-  height: 54px;
-  background: linear-gradient(135deg, #125ea2 0%, #ffd700 100%);
-  border-radius: 50%;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10010;
-  border: 3px solid #fff;
-  transition: box-shadow 0.2s, background 0.2s;
-}
-.organisers-circle:hover {
-  box-shadow: 0 8px 32px rgba(18,94,162,0.25);
-  background: linear-gradient(135deg, #ffd700 0%, #125ea2 100%);
-}
-.organisers-tooltip {
-  position: fixed;
-  top: 142px;
-  right: 32px;
-  background: #fff;
-  color: #222;
-  padding: 16px 18px 12px 18px;
+  background: #111;
+  color: #ffd700;
   border-radius: 14px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-  min-width: 200px;
-  max-width: 260px;
+  max-width: 340px;
+  min-width: 220px;
+  z-index: 10012;
   font-size: 1rem;
-  z-index: 10011;
   text-align: left;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+.organisers-popup-min {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: 56px !important;
+  padding-bottom: 0 !important;
+}
+.organisers-popup #organisersPopupHeader {
+  background: #ffd700;
+  color: #222;
+  font-size: 1.15rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  padding: 14px 22px 12px 22px;
+  border-radius: 14px 14px 0 0;
+  cursor: pointer;
+  user-select: none;
+}
+.organisers-popup #organisersPopupContent {
+  padding: 18px 22px 18px 22px;
 }
 #addTeam {
   background: linear-gradient(135deg, #222 0%, #ffd700 100%);

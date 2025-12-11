@@ -1,3 +1,155 @@
+// Spin Wheel logic: randomly pair teams from each pool, store in localStorage, and show result
+function handleSpinWheel() {
+  let pools = localStorage.getItem('lsm_pools');
+  if (!pools) return;
+  let data = JSON.parse(pools);
+  let allPools = ['A', 'B', 'C', 'D'];
+  let matches = [];
+  let used = {};
+  // For each pool, shuffle teams and pair them
+  allPools.forEach(pool => {
+    let teams = [...(data[pool] || [])];
+    teams = shuffleArray(teams);
+    for (let i = 0; i < teams.length; i += 2) {
+      if (teams[i+1]) {
+        matches.push({ team1: teams[i], team2: teams[i+1], pool });
+        used[teams[i]] = true;
+        used[teams[i+1]] = true;
+      }
+    }
+  });
+  // If any team left without a match (should not happen if even count), pair with next available
+  allPools.forEach(pool => {
+    let teams = data[pool] || [];
+    teams.forEach(t => {
+      if (!used[t]) {
+        // Find another unpaired team
+        for (let p2 of allPools) {
+          if (p2 === pool) continue;
+          let t2 = (data[p2] || []).find(x => !used[x]);
+          if (t2) {
+            matches.push({ team1: t, team2: t2, pool: pool + '/' + p2 });
+            used[t] = true;
+            used[t2] = true;
+            break;
+          }
+        }
+      }
+    });
+  });
+  localStorage.setItem('lsm_matches', JSON.stringify(matches));
+  let msg = document.getElementById('spinResultMsg');
+  if (msg) {
+    msg.innerHTML = `<span style='color:#125ea2;font-weight:bold;'>Matches scheduled! Check the Schedule tab.</span>`;
+  }
+  renderScheduleTab();
+}
+
+// Utility: shuffle array
+function shuffleArray(arr) {
+  let a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Render scheduled matches in Schedule tab
+function renderScheduleTab() {
+  let matches = [];
+  try {
+    matches = JSON.parse(localStorage.getItem('lsm_matches')) || [];
+  } catch {}
+  let scheduleDiv = document.getElementById('schedule');
+  if (!scheduleDiv) return;
+  let html = '<h2>Schedule</h2>';
+  if (matches.length === 0) {
+    html += '<p>Coming soon...</p>';
+  } else {
+    if (isAdmin) {
+      html += `<div style='text-align:center;margin-bottom:16px;'><button onclick='deleteAllMatches()' style='background:#b71c1c;color:#fff;font-weight:bold;padding:10px 28px;border-radius:10px;font-size:1.1rem;'>Delete All Matches</button></div>`;
+    }
+    html += '<div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">';
+    matches.forEach((m, idx) => {
+      html += `<div style="background:linear-gradient(135deg,#ffd700 0%,#125ea2 100%);color:#222;font-weight:bold;padding:16px 18px;border-radius:12px;min-width:180px;box-shadow:0 2px 12px rgba(0,0,0,0.18);margin-bottom:10px;text-align:center;position:relative;">
+        <div id='matchDisplay${idx}'>
+          <div style='font-size:1.1rem;margin-bottom:6px;'>${m.team1} <span style='color:#b71c1c;'>vs</span> ${m.team2}</div>
+          <div style='font-size:0.98rem;color:#125ea2;'>Pool: ${m.pool}</div>
+        </div>
+        ${isAdmin ? `
+        <div style='margin-top:8px;'>
+          <button onclick='editMatch(${idx})' style='background:#125ea2;color:#fff;padding:4px 12px;border-radius:6px;font-size:0.98rem;margin-right:6px;'>Edit</button>
+          <button onclick='deleteMatch(${idx})' style='background:#b71c1c;color:#fff;padding:4px 12px;border-radius:6px;font-size:0.98rem;'>Delete</button>
+        </div>
+        <div id='editMatchForm${idx}' style='display:none;margin-top:8px;'>
+          <input id='editTeam1_${idx}' value='${m.team1}' style='padding:4px 8px;border-radius:6px;border:1px solid #ccc;margin-right:6px;max-width:90px;'>
+          <input id='editTeam2_${idx}' value='${m.team2}' style='padding:4px 8px;border-radius:6px;border:1px solid #ccc;margin-right:6px;max-width:90px;'>
+          <input id='editPool_${idx}' value='${m.pool}' style='padding:4px 8px;border-radius:6px;border:1px solid #ccc;max-width:60px;'>
+          <button onclick='saveMatch(${idx})' style='background:#ffd700;color:#222;padding:4px 12px;border-radius:6px;font-size:0.98rem;margin-left:6px;'>Save</button>
+          <button onclick='cancelEditMatch(${idx})' style='background:#ccc;color:#222;padding:4px 12px;border-radius:6px;font-size:0.98rem;margin-left:6px;'>Cancel</button>
+        </div>
+        ` : ''}
+      </div>`;
+    });
+    html += '</div>';
+  }
+  scheduleDiv.innerHTML = html;
+}
+
+// Admin controls for matches
+window.deleteAllMatches = function() {
+  if (confirm('Are you sure you want to delete all matches?')) {
+    localStorage.removeItem('lsm_matches');
+    renderScheduleTab();
+  }
+}
+window.deleteMatch = function(idx) {
+  let matches = JSON.parse(localStorage.getItem('lsm_matches')) || [];
+  if (confirm('Delete this match?')) {
+    matches.splice(idx, 1);
+    localStorage.setItem('lsm_matches', JSON.stringify(matches));
+    renderScheduleTab();
+  }
+}
+window.editMatch = function(idx) {
+  document.getElementById('matchDisplay'+idx).style.display = 'none';
+  document.getElementById('editMatchForm'+idx).style.display = 'block';
+}
+window.cancelEditMatch = function(idx) {
+  document.getElementById('matchDisplay'+idx).style.display = 'block';
+  document.getElementById('editMatchForm'+idx).style.display = 'none';
+}
+window.saveMatch = function(idx) {
+  let matches = JSON.parse(localStorage.getItem('lsm_matches')) || [];
+  let t1 = document.getElementById('editTeam1_'+idx).value.trim();
+  let t2 = document.getElementById('editTeam2_'+idx).value.trim();
+  let pool = document.getElementById('editPool_'+idx).value.trim();
+  if (!t1 || !t2) { alert('Team names required'); return; }
+  matches[idx] = { team1: t1, team2: t2, pool };
+  localStorage.setItem('lsm_matches', JSON.stringify(matches));
+  renderScheduleTab();
+}
+
+// On page load, render schedule and Spin Wheel for all users
+document.addEventListener('DOMContentLoaded', function() {
+  renderScheduleTab();
+  // Render Spin Wheel for all users on the public section
+  let publicSpinSection = document.getElementById('spinWheelPublicSection');
+  if (publicSpinSection) {
+    // Temporarily swap the section for rendering
+    let orig = document.getElementById('spinWheelHomeSection');
+    let origId = null;
+    if (orig) {
+      origId = orig.id;
+      orig.id = '';
+    }
+    publicSpinSection.id = 'spinWheelHomeSection';
+    renderSpinWheelHome();
+    publicSpinSection.id = 'spinWheelPublicSection';
+    if (orig && origId) orig.id = origId;
+  }
+});
 // Firebase Configuration (replace with your own config if needed)
 const firebaseConfig = {
   apiKey: "AIzaSyBj8Jw68aiH1c3O-QMVi15Y6y5Gl1rZ_zs",
@@ -50,14 +202,42 @@ function verifyAdminPincode() {
 
 function renderAdminFeatures() {
   // Example admin features, add more as needed
-  document.getElementById('adminFeatures').innerHTML = `
+  let html = `
     <h3>Admin Controls</h3>
     <button onclick="toggleEditLock()">Toggle Edit Lock</button>
     <button onclick="showPoolManagement()">Pool Management</button>
     <div id="editLockStatus"></div>
+    <div id="spinLockSection"></div>
     <!-- Add more admin-only controls here -->
   `;
+  document.getElementById('adminFeatures').innerHTML = html;
   updateEditLockStatus();
+  updateSpinLockSection();
+}
+
+function updateSpinLockSection() {
+  // Only show if all teams are assigned (All Teams is empty)
+  let pools = localStorage.getItem('lsm_pools');
+  let allEmpty = false;
+  if (pools) {
+    let data = JSON.parse(pools);
+    allEmpty = Array.isArray(data.all) && data.all.length === 0;
+  }
+  let section = document.getElementById('spinLockSection');
+  if (!section) return;
+  if (allEmpty) {
+    let locked = localStorage.getItem('lsm_spin_locked') !== 'false';
+    section.innerHTML = `<button id="spinLockBtn" onclick="toggleSpinLock()" style="background:${locked ? '#b71c1c' : '#125ea2'};color:#fff;font-weight:bold;padding:10px 28px;border-radius:10px;font-size:1.1rem;margin-top:12px;">${locked ? 'Unlock Spin Wheel' : 'Lock Spin Wheel'}</button><div style="margin-top:8px;color:#ffd700;">${locked ? 'Spin Wheel is locked' : 'Spin Wheel is unlocked'}</div>`;
+  } else {
+    section.innerHTML = '';
+  }
+}
+
+function toggleSpinLock() {
+  let locked = localStorage.getItem('lsm_spin_locked') !== 'false';
+  localStorage.setItem('lsm_spin_locked', locked ? 'false' : 'true');
+  updateSpinLockSection();
+  renderSpinWheelHome();
 }
 
 let editLock = false;
@@ -70,7 +250,130 @@ function updateEditLockStatus() {
 }
 
 function showPoolManagement() {
-  alert('Pool Management feature coming soon!');
+  document.getElementById('poolManagementModal').style.display = 'block';
+  renderPoolManagement();
+}
+function closePoolManagement() {
+  document.getElementById('poolManagementModal').style.display = 'none';
+}
+// Attach to window for dynamic onclick
+window.showPoolManagement = showPoolManagement;
+window.closePoolManagement = closePoolManagement;
+
+// --- Pool Management Logic ---
+let poolData = {
+  all: [],
+  A: [],
+  B: [],
+  C: [],
+  D: []
+};
+
+function renderPoolManagement() {
+  // Load teams from Firebase and localStorage
+  database.ref('teams').once('value', snapshot => {
+    let allTeams = [];
+    snapshot.forEach(child => {
+      const team = child.val();
+      allTeams.push(team.teamName);
+    });
+    // Load from localStorage if exists
+    let saved = localStorage.getItem('lsm_pools');
+    if (saved) {
+      poolData = JSON.parse(saved);
+      // Remove teams that no longer exist
+      let allAssigned = [...poolData.A, ...poolData.B, ...poolData.C, ...poolData.D];
+      poolData.all = allTeams.filter(t => !allAssigned.includes(t));
+    } else {
+      poolData = { all: allTeams, A: [], B: [], C: [], D: [] };
+    }
+    updatePoolUI();
+  });
+}
+
+function updatePoolUI() {
+  const lists = {
+    all: document.getElementById('allTeamsList'),
+    A: document.getElementById('poolAList'),
+    B: document.getElementById('poolBList'),
+    C: document.getElementById('poolCList'),
+    D: document.getElementById('poolDList')
+  };
+  Object.entries(lists).forEach(([key, ul]) => {
+    ul.innerHTML = '';
+    poolData[key].forEach(team => {
+      let li = document.createElement('li');
+      li.textContent = team;
+      li.setAttribute('draggable', 'true');
+      li.style.cssText = 'background:#fff;color:#125ea2;font-weight:bold;padding:6px 8px;margin:6px 0;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,0.08);cursor:grab;text-align:center;';
+      li.ondragstart = e => {
+        e.dataTransfer.setData('text/plain', JSON.stringify({ team, from: key }));
+      };
+      ul.appendChild(li);
+    });
+    // Dragover and drop events
+    ul.ondragover = e => { e.preventDefault(); ul.style.background = '#ffd70022'; };
+    ul.ondragleave = e => { ul.style.background = ''; };
+    ul.ondrop = e => {
+      e.preventDefault();
+      ul.style.background = '';
+      let data = JSON.parse(e.dataTransfer.getData('text/plain'));
+      if (data.from !== key) {
+        // Remove from old
+        let idx = poolData[data.from].indexOf(data.team);
+        if (idx > -1) poolData[data.from].splice(idx, 1);
+        // Add to new
+        poolData[key].push(data.team);
+        updatePoolUI();
+      }
+    };
+  });
+}
+
+
+// Save pools button logic (works even after DOM reload)
+function setupSavePoolsBtn() {
+  let saveBtn = document.getElementById('savePoolsBtn');
+  if (saveBtn) {
+    saveBtn.onclick = function() {
+      localStorage.setItem('lsm_pools', JSON.stringify(poolData));
+      alert('Pools saved!');
+    };
+  }
+}
+
+// On DOMContentLoaded, setup Save button and restore pools if modal is opened
+document.addEventListener('DOMContentLoaded', function() {
+  setupSavePoolsBtn();
+  // If modal is opened, always reload pool data from storage
+  let poolModal = document.getElementById('poolManagementModal');
+  if (poolModal) {
+    poolModal.addEventListener('show', renderPoolManagement);
+  }
+});
+
+// Also call setupSavePoolsBtn after rendering pool management (in case modal is re-rendered)
+function renderPoolManagement() {
+  // Load teams from Firebase and localStorage
+  database.ref('teams').once('value', snapshot => {
+    let allTeams = [];
+    snapshot.forEach(child => {
+      const team = child.val();
+      allTeams.push(team.teamName);
+    });
+    // Load from localStorage if exists
+    let saved = localStorage.getItem('lsm_pools');
+    if (saved) {
+      poolData = JSON.parse(saved);
+      // Remove teams that no longer exist
+      let allAssigned = [...poolData.A, ...poolData.B, ...poolData.C, ...poolData.D];
+      poolData.all = allTeams.filter(t => !allAssigned.includes(t));
+    } else {
+      poolData = { all: allTeams, A: [], B: [], C: [], D: [] };
+    }
+    updatePoolUI();
+    setupSavePoolsBtn();
+  });
 }
 
 // Tab navigation
@@ -296,6 +599,90 @@ function exportTeamsToExcel() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   });
+}
+
+function renderSpinWheelHome() {
+  let section = document.getElementById('spinWheelHomeSection');
+  if (!section) return;
+  let pools = localStorage.getItem('lsm_pools');
+  let allAssigned = false;
+  let teamsLeft = 1;
+  if (pools) {
+    let data = JSON.parse(pools);
+    allAssigned = Array.isArray(data.all) && data.all.length === 0;
+    teamsLeft = Array.isArray(data.all) ? data.all.length : 1;
+  }
+  section.style.display = 'block';
+  let locked = localStorage.getItem('lsm_spin_locked') !== 'false';
+  let now = new Date();
+  let spinDate = new Date('2026-01-04T19:00:00+05:30');
+  let beforeCountdown = now < spinDate;
+  let disabled = !allAssigned || locked || beforeCountdown;
+  let btnText = !allAssigned ? 'Assign all teams to pools' : (locked ? 'Spin Locked by Admin' : (beforeCountdown ? 'Spin Opens Jan 4, 7PM' : 'Spin'));
+  let notification = '';
+  if (!allAssigned) {
+    notification = `<div style='color:#b71c1c;font-weight:bold;margin-bottom:10px;'>Move all teams to pools to enable Spin.</div>`;
+  } else {
+    notification = `<div style='color:#125ea2;font-weight:bold;margin-bottom:10px;'>All teams are assigned to Pools, Get ready for Spin!</div>`;
+  }
+  section.innerHTML = `
+    <div style=\"margin-bottom:24px;text-align:center;\">
+      <div style=\"font-size:2.1rem;color:#fff;font-weight:bold;letter-spacing:1px;\">Tournament Starts In</div>
+      <div style=\"width:60px;height:4px;background:linear-gradient(90deg,#00eaff 0%,#125ea2 100%);margin:12px auto 0 auto;border-radius:2px;\"></div>
+    </div>
+    <div id=\"spinCountdown\" style=\"margin-bottom:32px;display:flex;justify-content:center;align-items:center;gap:28px;\"></div>
+    ${notification}
+    <div style=\"margin-bottom:16px;\">
+      <svg width=\"96\" height=\"96\" viewBox=\"0 0 96 96\"><circle cx=\"48\" cy=\"48\" r=\"44\" fill=\"#ffd700\" stroke=\"#125ea2\" stroke-width=\"6\"/><circle cx=\"48\" cy=\"48\" r=\"28\" fill=\"#fff\" stroke=\"#b71c1c\" stroke-width=\"4\"/><text x=\"48\" y=\"60\" text-anchor=\"middle\" font-size=\"32\" fill=\"#125ea2\" font-weight=\"bold\">🎡</text></svg>
+    </div>
+    <button id=\"spinWheelBtn\" style=\"background:linear-gradient(135deg,#ffd700 0%,#125ea2 100%);color:#222;font-weight:bold;padding:18px 40px;border-radius:16px;font-size:1.4rem;box-shadow:0 2px 12px rgba(0,0,0,0.18);${disabled ? 'opacity:0.6;cursor:not-allowed;' : ''}\" ${disabled ? 'disabled' : ''}>${btnText}</button>
+    <div id=\"spinResultMsg\" style=\"margin-top:12px;font-size:1.05rem;color:#125ea2;\"></div>
+  `;
+  if (!disabled) document.getElementById('spinWheelBtn').onclick = handleSpinWheel;
+  updateSpinCountdown();
+}
+
+// Countdown timer for Spin Wheel
+function updateSpinCountdown() {
+  let countdownDiv = document.getElementById('spinCountdown');
+  if (!countdownDiv) return;
+  let now = new Date();
+  let spinDate = new Date('2026-01-10T00:00:00+05:30');
+  if (now >= spinDate) {
+    // Hide the countdown/tournament start section
+    var countdownSection = countdownDiv.parentElement;
+    if (countdownSection) countdownSection.style.display = 'none';
+    return;
+  }
+  let diff = spinDate - now;
+  let d = Math.floor(diff / (1000*60*60*24));
+  let h = Math.floor((diff / (1000*60*60)) % 24);
+  let m = Math.floor((diff / (1000*60)) % 60);
+  let s = Math.floor((diff / 1000) % 60);
+  countdownDiv.innerHTML = `
+    <div style=\"display:flex;gap:18px;\">
+      <div style=\"background:#10131a;border-radius:16px;padding:18px 28px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:90px;\">
+        <span style=\"color:#00eaff;font-size:2.6rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${d}</span>
+        <span style=\"color:#fff;font-size:1.05rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">DAYS</span>
+      </div>
+      <div style=\"color:#00eaff;font-size:2.5rem;align-self:center;\">:</div>
+      <div style=\"background:#10131a;border-radius:16px;padding:18px 28px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:90px;\">
+        <span style=\"color:#00eaff;font-size:2.6rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${String(h).padStart(2,'0')}</span>
+        <span style=\"color:#fff;font-size:1.05rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">HOURS</span>
+      </div>
+      <div style=\"color:#00eaff;font-size:2.5rem;align-self:center;\">:</div>
+      <div style=\"background:#10131a;border-radius:16px;padding:18px 28px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:90px;\">
+        <span style=\"color:#00eaff;font-size:2.6rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${String(m).padStart(2,'0')}</span>
+        <span style=\"color:#fff;font-size:1.05rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">MINUTES</span>
+      </div>
+      <div style=\"color:#00eaff;font-size:2.5rem;align-self:center;\">:</div>
+      <div style=\"background:#10131a;border-radius:16px;padding:18px 28px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:90px;\">
+        <span style=\"color:#00eaff;font-size:2.6rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${String(s).padStart(2,'0')}</span>
+        <span style=\"color:#fff;font-size:1.05rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">SECONDS</span>
+      </div>
+    </div>
+  `;
+  setTimeout(updateSpinCountdown, 1000);
 }
 
 

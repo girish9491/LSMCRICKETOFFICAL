@@ -12,22 +12,25 @@
   <div class="background"></div>
     <!-- IPL Theme Music -->
     <audio id="iplMusic" src="ipl-theme.mp3" preload="auto"></audio>
-  <!-- Organisers Floating Circle -->
-  <div id="organisersCircle" class="organisers-circle" title="Show Tournament Details">
-    <span style="font-size:2rem;color:#fff;">&#9660;</span>
-  </div>
-  <div id="organisersTooltip" class="organisers-tooltip" style="display:none;">
+  <!-- Organisers & Tournament Details Popup (right side, hides on nav click) -->
+  <div id="organisersPopup" class="prize-popup" style="right:32px;left:auto;top:50%;transform:translateY(-50%);background:#111;color:#ffd700;">
+    <div style="font-size:1.08rem;font-weight:bold;color:#ffd700;margin-bottom:6px;">Organisers & Tournament Details</div>
     <div style="font-size:1.1rem;font-weight:bold;margin-bottom:6px;color:#b71c1c;">Organisers</div>
-    <div style="font-size:1rem;margin-bottom:4px;">Chandu : <a href="tel:8639015104" style="color:#125ea2;text-decoration:none;">8639015104</a></div>
-    <div style="font-size:1rem;margin-bottom:10px;">Etish : <a href="tel:917893319150" style="color:#125ea2;text-decoration:none;">917893319150</a></div>
+    <div style="font-size:1rem;margin-bottom:4px;">Chandu : <a href="tel:8639015104" style="color:#ffd700;text-decoration:none;">8639015104</a></div>
+    <div style="font-size:1rem;margin-bottom:10px;">Etish : <a href="tel:917893319150" style="color:#ffd700;text-decoration:none;">917893319150</a></div>
     <div style="border-top:1px solid #eee;margin:10px 0 8px 0;"></div>
-    <div style="font-size:1.08rem;font-weight:bold;color:#125ea2;margin-bottom:6px;">Tournament Details</div>
-    <ul style="font-size:0.98rem;color:#222;padding-left:18px;margin:0 0 8px 0;">
-      <li>Ball Type: <b>Red Vickey cork ball</b> (teams' responsibility)</li>
+    <div style="font-size:1.08rem;font-weight:bold;color:#ffd700;margin-bottom:6px;">Tournament Details</div>
+    <ul style="font-size:0.98rem;color:#ffd700;padding-left:18px;margin:0 0 8px 0;">
+      <li>Ball Type: <b style="color:#ffd700;">Red Vickey cork ball</b> (teams' responsibility)</li>
       <li>Live stream for every match</li>
       <li>Man of the Match, Man of the Series, Best Bowler, Best Batsman trophies</li>
-      <li>Scores updated daily on <b>Cricheros app</b></li>
-      <li>Registrations open till <b>December 30</b></li>
+      <li>Scores updated daily on <b style="color:#ffd700;">Cricheros app</b></li>
+      <li>Registrations open till <b style="color:#ffd700;">December 30</b></li>
+      <li>Ground Location: <a href="https://maps.app.goo.gl/t7ntBjnHX7bJ1CH87" target="_blank" style="color:#00eaff;text-decoration:underline;">View on Google Maps</a></li>
+    </ul>
+    <div style="text-align:left;margin-top:10px;">
+      <button onclick="window.open('https://chat.whatsapp.com/HsnFwhyhsat254jgflw4Yg?mode=hqrt3','_blank')" style="background:#25d366;color:#fff;font-weight:bold;padding:8px 18px;border-radius:8px;font-size:1rem;border:none;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.10);">Click Here to Join our WhatsApp Group</button>
+    </div>
     </ul>
   </div>
   <!-- Simple messaging popup for Entry Fee and Prize Money -->
@@ -51,6 +54,7 @@
       <button onclick="showTab('liveScore')">Live Score</button>
       <button id="adminPanelBtn" onclick="openAdminPanel()">Admin Panel</button>
     </nav>
+    <div id="spinWheelPublicSection" style="margin:32px auto 0 auto;max-width:420px;text-align:center;"></div>
     <div id="addTeam" class="tab-content"></div>
     <div id="teamsRegistered" class="tab-content" style="display:none"></div>
     <div id="archives" class="tab-content" style="display:none">
@@ -75,6 +79,8 @@
     </div>
     <!-- Admin Panel Modal -->
     <div id="adminPanelModal" class="modal" style="display:none;">
+        <!-- Spin Wheel Home Section (dynamically shown) -->
+        <div id="spinWheelHomeSection" style="display:none;margin:24px auto 0 auto;max-width:420px;text-align:center;"></div>
       <div class="modal-content">
         <span class="close" onclick="closeAdminPanel()">&times;</span>
         <h2>Admin Panel</h2>
@@ -91,34 +97,220 @@
         </div>
       </div>
     </div>
+
+      <!-- Pool Management Modal (fullscreen, medium font) -->
+      <div id="poolManagementModal" class="modal" style="display:none;z-index:100000;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(20,20,40,0.98);font-size:1.25rem;overflow:auto;">
+        <div class="modal-content" style="max-width:100vw;width:100vw;min-width:320px;height:100vh;box-shadow:none;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;">
+          <span class="close" onclick="closePoolManagement()" style="font-size:2.5rem;color:#ffd700;position:absolute;top:24px;right:48px;cursor:pointer;z-index:100001;">&times;</span>
+          <h2 style="color:#ffd700;text-align:center;margin:32px 0 24px 0;font-size:2.2rem;letter-spacing:1px;">Pool Management</h2>
+          <div id="poolBoxes" style="display:flex;flex-wrap:wrap;gap:32px;justify-content:center;align-items:flex-start;width:100%;max-width:1400px;margin:0 auto 0 auto;">
+            <div class="pool-box" id="allTeamsBox" style="flex:1 1 220px;min-width:200px;max-width:260px;background:rgba(20,20,40,0.85);border-radius:16px;padding:18px 12px;box-shadow:0 2px 18px rgba(0,0,0,0.18);font-size:1.1rem;">
+              <h3 style="color:#ffd700;text-align:center;font-size:1.3rem;">All Teams</h3>
+              <ul id="allTeamsList" style="min-height:60px;list-style:none;padding:0;margin:0;"></ul>
+            </div>
+            <div class="pool-box" id="poolABox" style="flex:1 1 160px;min-width:140px;max-width:200px;background:rgba(18,94,162,0.18);border-radius:16px;padding:18px 12px;box-shadow:0 2px 12px rgba(0,0,0,0.10);font-size:1.1rem;">
+              <h4 style="color:#125ea2;text-align:center;font-size:1.15rem;">Pool A</h4>
+              <ul id="poolAList" style="min-height:40px;list-style:none;padding:0;margin:0;"></ul>
+            </div>
+            <div class="pool-box" id="poolBBox" style="flex:1 1 160px;min-width:140px;max-width:200px;background:rgba(18,94,162,0.18);border-radius:16px;padding:18px 12px;box-shadow:0 2px 12px rgba(0,0,0,0.10);font-size:1.1rem;">
+              <h4 style="color:#125ea2;text-align:center;font-size:1.15rem;">Pool B</h4>
+              <ul id="poolBList" style="min-height:40px;list-style:none;padding:0;margin:0;"></ul>
+            </div>
+            <div class="pool-box" id="poolCBox" style="flex:1 1 160px;min-width:140px;max-width:200px;background:rgba(18,94,162,0.18);border-radius:16px;padding:18px 12px;box-shadow:0 2px 12px rgba(0,0,0,0.10);font-size:1.1rem;">
+              <h4 style="color:#125ea2;text-align:center;font-size:1.15rem;">Pool C</h4>
+              <ul id="poolCList" style="min-height:40px;list-style:none;padding:0;margin:0;"></ul>
+            </div>
+            <div class="pool-box" id="poolDBox" style="flex:1 1 160px;min-width:140px;max-width:200px;background:rgba(18,94,162,0.18);border-radius:16px;padding:18px 12px;box-shadow:0 2px 12px rgba(0,0,0,0.10);font-size:1.1rem;">
+              <h4 style="color:#125ea2;text-align:center;font-size:1.15rem;">Pool D</h4>
+              <ul id="poolDList" style="min-height:40px;list-style:none;padding:0;margin:0;"></ul>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:32px;">
+            <button id="savePoolsBtn" style="background:#125ea2;color:#fff;font-weight:bold;padding:14px 38px;border-radius:12px;font-size:1.25rem;margin:0 12px;">Save Pools</button>
+            <button onclick="closePoolManagement()" style="background:#b71c1c;color:#fff;font-weight:bold;padding:14px 38px;border-radius:12px;font-size:1.25rem;">Close</button>
+          </div>
+        </div>
+      </div>
   </div>
-  <div class="scroll-bar">
-    <span>Stay Tuned for First Match of Lingasamudram Cricket Tournament</span>
+  <!-- Homepage Archive Images Carousel (continuous scroll, repeated images, gap at end) -->
+  <div id="homeArchiveCarousel" style="width:100vw;overflow:hidden;padding:0 0 0 0;display:flex;justify-content:center;align-items:center;background:transparent;position:relative;z-index:1;margin-top:180px;">
+    <div id="homeArchiveImages" style="display:flex;gap:32px;animation:scrollLeft 32s linear infinite;align-items:center;min-width:200vw;">
+      <!-- Images will be injected by JS -->
+    </div>
   </div>
+  <style>
+    @keyframes scrollLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    #homeArchiveImages img {
+      width: 110px;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 50%;
+      box-shadow: 0 2px 18px rgba(0,0,0,0.18);
+      border: 4px solid #ffd700;
+      background: #fff;
+      transition: box-shadow 0.2s;
+    }
+    #homeArchiveImages img:hover {
+      box-shadow: 0 6px 32px #ffd70099;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var archiveImages = [];
+      var maxPhotos = 80;
+      var loadedImages = [];
+      var imagesChecked = 0;
+      var homeArchiveImages = document.getElementById('homeArchiveImages');
+      function tryLoadImage(idx) {
+        if (idx > maxPhotos) {
+          renderImages();
+          return;
+        }
+        var imgName = `photo${idx}.JPG`;
+        if (/^cricket-bg\.jpg$/i.test(imgName) || /^cricket-bg\.JPG$/i.test(imgName)) {
+          tryLoadImage(idx + 1);
+          return;
+        }
+        var img = new Image();
+        img.src = imgName;
+        img.onload = function() {
+          loadedImages.push(imgName);
+          tryLoadImage(idx + 1);
+        };
+        img.onerror = function() {
+          tryLoadImage(idx + 1);
+        };
+      }
+      function renderImages() {
+        if (homeArchiveImages) {
+          let html = '';
+          for (let i = 0; i < 4; i++) {
+            for (let img of loadedImages) {
+              html += `<img src="${img}" alt="Archive Photo">`;
+            }
+          }
+          html += `<div style='width:60px;'></div>`;
+          homeArchiveImages.innerHTML = html;
+        }
+      }
+      tryLoadImage(1);
+      // Hide carousel when any tab or admin panel is open
+      function updateHomePopups() {
+        var anyTabVisible = false;
+        document.querySelectorAll('.tab-content').forEach(tab => {
+          if (tab.style.display !== 'none') anyTabVisible = true;
+        });
+        var adminPanelModal = document.getElementById('adminPanelModal');
+        var adminPanelVisible = adminPanelModal && adminPanelModal.style.display !== 'none';
+        var organisersPopup = document.getElementById('organisersPopup');
+        var prizePopup = document.getElementById('prizePopup');
+        var homeArchiveCarousel = document.getElementById('homeArchiveCarousel');
+        if (organisersPopup) organisersPopup.style.display = (anyTabVisible || adminPanelVisible) ? 'none' : '';
+        if (prizePopup) prizePopup.style.display = (anyTabVisible || adminPanelVisible) ? 'none' : '';
+        if (homeArchiveCarousel) homeArchiveCarousel.style.display = (anyTabVisible || adminPanelVisible) ? 'none' : '';
+      }
+      document.querySelectorAll('nav button').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          setTimeout(updateHomePopups, 10);
+        });
+      });
+      // Also call on page load
+      updateHomePopups();
+    });
+  </script>
   <script src="app.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      var circle = document.getElementById('organisersCircle');
-      var tooltip = document.getElementById('organisersTooltip');
-      circle.addEventListener('click', function(e) {
-        e.stopPropagation();
-        tooltip.style.display = tooltip.style.display === 'block' ? 'none' : 'block';
+      // Hide organisers popup on nav button click
+      var organisersPopup = document.getElementById('organisersPopup');
+      // Hide popups when any tab is open, show when all tabs are hidden (homepage)
+      function updateHomePopups() {
+        var anyTabVisible = false;
+        document.querySelectorAll('.tab-content').forEach(tab => {
+          if (tab.style.display !== 'none') anyTabVisible = true;
+        });
+        var adminPanelModal = document.getElementById('adminPanelModal');
+        var adminPanelVisible = adminPanelModal && adminPanelModal.style.display !== 'none';
+        var organisersPopup = document.getElementById('organisersPopup');
+        var prizePopup = document.getElementById('prizePopup');
+        if (organisersPopup) organisersPopup.style.display = (anyTabVisible || adminPanelVisible) ? 'none' : '';
+        if (prizePopup) prizePopup.style.display = (anyTabVisible || adminPanelVisible) ? 'none' : '';
+      }
+      document.querySelectorAll('nav button').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          setTimeout(updateHomePopups, 10);
+        });
       });
-      // Hide tooltip when clicking outside
-      document.addEventListener('click', function(e) {
-        if (tooltip.style.display === 'block') tooltip.style.display = 'none';
-      });
-
-        // Play IPL music for 10 seconds
-        var music = document.getElementById('iplMusic');
-        if (music) {
-          music.play();
-          setTimeout(function() {
-            music.pause();
-            music.currentTime = 0;
-          }, 10000);
-        }
+      // Also hide popups when Admin Panel is opened
+      var adminPanelBtn = document.getElementById('adminPanelBtn');
+      if (adminPanelBtn) {
+        adminPanelBtn.addEventListener('click', function() {
+          var organisersPopup = document.getElementById('organisersPopup');
+          var prizePopup = document.getElementById('prizePopup');
+          if (organisersPopup) organisersPopup.style.display = 'none';
+          if (prizePopup) prizePopup.style.display = 'none';
+        });
+      }
+      // Also call on page load
+      updateHomePopups();
+      // Show organisers popup on homepage load (refresh)
+      if (organisersPopup) organisersPopup.style.display = '';
+      // Play IPL music for 10 seconds
+      var music = document.getElementById('iplMusic');
+      if (music) {
+        music.play();
+        setTimeout(function() {
+          music.pause();
+          music.currentTime = 0;
+        }, 10000);
+      }
     });
+  </script>
+  <script>
+function renderAdminFeatures() {
+  let html = `
+    <h3>Admin Controls</h3>
+    <button onclick="toggleEditLock()">Toggle Edit Lock</button>
+    <button onclick="showPoolManagement()">Pool Management</button>
+    <div id="editLockStatus"></div>
+    <div id="spinLockSection"></div>
+    <div style='margin-top:18px;'>
+      <button id="lockTeamsRegisteredBtn" onclick="lockTeamsRegistered(true)" style="background:#b71c1c;color:#fff;font-weight:bold;padding:8px 18px;border-radius:8px;font-size:1rem;margin-right:8px;">Lock Teams Registered Tab</button>
+      <button id="unlockTeamsRegisteredBtn" onclick="lockTeamsRegistered(false)" style="background:#125ea2;color:#fff;font-weight:bold;padding:8px 18px;border-radius:8px;font-size:1rem;">Unlock Teams Registered Tab</button>
+      <div id="teamsRegisteredLockStatus" style="margin-top:8px;color:#ffd700;"></div>
+    </div>
+    <!-- Add more admin-only controls here -->
+  `;
+  document.getElementById('adminFeatures').innerHTML = html;
+  updateEditLockStatus();
+  updateSpinLockSection();
+  updateTeamsRegisteredLockStatus();
+}
+
+function lockTeamsRegistered(lock) {
+  localStorage.setItem('lsm_teamsRegistered_locked', lock ? 'true' : 'false');
+  updateTeamsRegisteredLockStatus();
+  updateTeamsRegisteredButton();
+}
+
+function updateTeamsRegisteredLockStatus() {
+  const locked = localStorage.getItem('lsm_teamsRegistered_locked') === 'true';
+  document.getElementById('teamsRegisteredLockStatus').innerText = locked ? 'Teams Registered tab is locked (hidden from homepage)' : 'Teams Registered tab is unlocked (visible on homepage)';
+}
+
+function updateTeamsRegisteredButton() {
+  const locked = localStorage.getItem('lsm_teamsRegistered_locked') === 'true';
+  const btn = document.querySelector("nav button[onclick*=showTab][onclick*='teamsRegistered']");
+  if (btn) btn.style.display = locked ? 'none' : '';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // ...existing code...
+  updateTeamsRegisteredButton();
+});
   </script>
 </body>
 </html>
