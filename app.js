@@ -659,29 +659,46 @@ function updateSpinCountdown() {
   let h = Math.floor((diff / (1000*60*60)) % 24);
   let m = Math.floor((diff / (1000*60)) % 60);
   let s = Math.floor((diff / 1000) % 60);
-  countdownDiv.innerHTML = `
-    <div style=\"display:flex;gap:18px;\">
-      <div style=\"background:#10131a;border-radius:16px;padding:18px 28px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:90px;\">
-        <span style=\"color:#00eaff;font-size:2.6rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${d}</span>
-        <span style=\"color:#fff;font-size:1.05rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">DAYS</span>
+  // Only show days and hours on mobile (≤600px), else show all
+  if (window.innerWidth <= 600) {
+    countdownDiv.innerHTML = `
+      <div style=\"display:flex;gap:18px;\">
+        <div style=\"background:#10131a;border-radius:16px;padding:18px 18px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:70px;\">
+          <span style=\"color:#00eaff;font-size:2.1rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${d}</span>
+          <span style=\"color:#fff;font-size:0.95rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">DAYS</span>
+        </div>
+        <div style=\"color:#00eaff;font-size:2.1rem;align-self:center;\">:</div>
+        <div style=\"background:#10131a;border-radius:16px;padding:18px 18px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:70px;\">
+          <span style=\"color:#00eaff;font-size:2.1rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${String(h).padStart(2,'0')}</span>
+          <span style=\"color:#fff;font-size:0.95rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">HOURS</span>
+        </div>
       </div>
-      <div style=\"color:#00eaff;font-size:2.5rem;align-self:center;\">:</div>
-      <div style=\"background:#10131a;border-radius:16px;padding:18px 28px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:90px;\">
-        <span style=\"color:#00eaff;font-size:2.6rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${String(h).padStart(2,'0')}</span>
-        <span style=\"color:#fff;font-size:1.05rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">HOURS</span>
+    `;
+  } else {
+    countdownDiv.innerHTML = `
+      <div style=\"display:flex;gap:18px;\">
+        <div style=\"background:#10131a;border-radius:16px;padding:18px 28px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:90px;\">
+          <span style=\"color:#00eaff;font-size:2.6rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${d}</span>
+          <span style=\"color:#fff;font-size:1.05rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">DAYS</span>
+        </div>
+        <div style=\"color:#00eaff;font-size:2.5rem;align-self:center;\">:</div>
+        <div style=\"background:#10131a;border-radius:16px;padding:18px 28px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:90px;\">
+          <span style=\"color:#00eaff;font-size:2.6rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${String(h).padStart(2,'0')}</span>
+          <span style=\"color:#fff;font-size:1.05rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">HOURS</span>
+        </div>
+        <div style=\"color:#00eaff;font-size:2.5rem;align-self:center;\">:</div>
+        <div style=\"background:#10131a;border-radius:16px;padding:18px 28px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:90px;\">
+          <span style=\"color:#00eaff;font-size:2.6rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${String(m).padStart(2,'0')}</span>
+          <span style=\"color:#fff;font-size:1.05rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">MINUTES</span>
+        </div>
+        <div style=\"color:#00eaff;font-size:2.5rem;align-self:center;\">:</div>
+        <div style=\"background:#10131a;border-radius:16px;padding:18px 28px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:90px;\">
+          <span style=\"color:#00eaff;font-size:2.6rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${String(s).padStart(2,'0')}</span>
+          <span style=\"color:#fff;font-size:1.05rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">SECONDS</span>
+        </div>
       </div>
-      <div style=\"color:#00eaff;font-size:2.5rem;align-self:center;\">:</div>
-      <div style=\"background:#10131a;border-radius:16px;padding:18px 28px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:90px;\">
-        <span style=\"color:#00eaff;font-size:2.6rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${String(m).padStart(2,'0')}</span>
-        <span style=\"color:#fff;font-size:1.05rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">MINUTES</span>
-      </div>
-      <div style=\"color:#00eaff;font-size:2.5rem;align-self:center;\">:</div>
-      <div style=\"background:#10131a;border-radius:16px;padding:18px 28px;box-shadow:0 2px 18px rgba(0,0,0,0.18);display:flex;flex-direction:column;align-items:center;min-width:90px;\">
-        <span style=\"color:#00eaff;font-size:2.6rem;font-family:'Montserrat',monospace;font-weight:700;text-shadow:0 0 12px #00eaff99;\">${String(s).padStart(2,'0')}</span>
-        <span style=\"color:#fff;font-size:1.05rem;letter-spacing:1px;margin-top:6px;opacity:0.85;\">SECONDS</span>
-      </div>
-    </div>
-  `;
+    `;
+  }
   setTimeout(updateSpinCountdown, 1000);
 }
 
