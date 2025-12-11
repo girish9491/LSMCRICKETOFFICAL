@@ -10,39 +10,9 @@
 </head>
 <body>
   <div class="background"></div>
-    <!-- IPL Theme Music -->
-    <audio id="iplMusic" src="ipl-theme.mp3" preload="auto"></audio>
-  <!-- Organisers & Tournament Details Popup (right side, hides on nav click) -->
-  <div id="organisersPopup" class="prize-popup" style="right:32px;left:auto;top:50%;transform:translateY(-50%);background:#111;color:#ffd700;">
-    <div style="font-size:1.08rem;font-weight:bold;color:#ffd700;margin-bottom:6px;">Organisers & Tournament Details</div>
-    <div style="font-size:1.1rem;font-weight:bold;margin-bottom:6px;color:#b71c1c;">Organisers</div>
-    <div style="font-size:1rem;margin-bottom:4px;">Chandu : <a href="tel:8639015104" style="color:#ffd700;text-decoration:none;">8639015104</a></div>
-    <div style="font-size:1rem;margin-bottom:10px;">Etish : <a href="tel:917893319150" style="color:#ffd700;text-decoration:none;">917893319150</a></div>
-    <div style="border-top:1px solid #eee;margin:10px 0 8px 0;"></div>
-    <div style="font-size:1.08rem;font-weight:bold;color:#ffd700;margin-bottom:6px;">Tournament Details</div>
-    <ul style="font-size:0.98rem;color:#ffd700;padding-left:18px;margin:0 0 8px 0;">
-      <li>Ball Type: <b style="color:#ffd700;">Red Vickey cork ball</b> (teams' responsibility)</li>
-      <li>Live stream for every match</li>
-      <li>Man of the Match, Man of the Series, Best Bowler, Best Batsman trophies</li>
-      <li>Scores updated daily on <b style="color:#ffd700;">Cricheros app</b></li>
-      <li>Registrations open till <b style="color:#ffd700;">December 30</b></li>
-      <li>Ground Location: <a href="https://maps.app.goo.gl/t7ntBjnHX7bJ1CH87" target="_blank" style="color:#00eaff;text-decoration:underline;">View on Google Maps</a></li>
-    </ul>
-    <div style="text-align:left;margin-top:10px;">
-      <button onclick="window.open('https://chat.whatsapp.com/HsnFwhyhsat254jgflw4Yg?mode=hqrt3','_blank')" style="background:#25d366;color:#fff;font-weight:bold;padding:8px 18px;border-radius:8px;font-size:1rem;border:none;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.10);">Click Here to Join our WhatsApp Group</button>
-    </div>
-    </ul>
-  </div>
-  <!-- Simple messaging popup for Entry Fee and Prize Money -->
-  <div id="prizePopup" class="prize-popup" style="display:block;">
-    <div style="font-size:1.08rem;font-weight:bold;color:#ffd700;margin-bottom:6px;">Tournament Entry & Prizes</div>
-    <div style="font-size:1rem;margin-bottom:4px;">Entry Fee: <b style="color:#ffd700;">₹2000/-</b></div>
-    <div style="font-size:1rem;margin-bottom:4px;">Prize Money:</div>
-    <ul style="font-size:0.98rem;color:#ffd700;padding-left:18px;margin:0 0 8px 0;">
-      <li>Winners: <b style="color:#ffd700;">₹50,000/-</b></li>
-      <li>Runners: <b style="color:#ffd700;">₹25,000/-</b></li>
-    </ul>
-  </div>
+  <!-- IPL Theme Music -->
+  <audio id="iplMusic" src="ipl-theme.mp3" preload="auto"></audio>
+  <!-- Overlayed Tournament Info Section -->
   <div class="container">
     <h1>Lingasamudram Cricket Tournament</h1>
     <nav>
@@ -52,9 +22,62 @@
       <button onclick="showTab('schedule')">Schedule</button>
       <button onclick="showTab('liveMatch')">Match Live</button>
       <button onclick="showTab('liveScore')">Live Score</button>
+      <button onclick="showTab('tournamentDetails')">Tournament Details</button>
       <button id="adminPanelBtn" onclick="openAdminPanel()">Admin Panel</button>
     </nav>
+      <!-- Tournament Details Tab -->
+      <div id="tournamentDetails" class="tab-content" style="display:none">
+        <div class="tournament-details-tab">
+          <div class="tournament-prizes">
+            <h3>Tournament Entry & Prizes</h3>
+            <div>Entry Fee: <span class="highlight">₹2000/-</span></div>
+            <div>Prize Money:</div>
+            <ul>
+              <li>Winners: <span class="highlight">₹50,000/-</span></li>
+              <li>Runners: <span class="highlight">₹25,000/-</span></li>
+            </ul>
+          </div>
+          <div class="tournament-organisers">
+            <h3>Organisers & Tournament Details</h3>
+            <div class="org-section">
+              <b>Organisers</b><br>
+              Chandu : <a href="tel:8639015104" class="highlight-link">8639015104</a><br>
+              Etish : <a href="tel:917893319150" class="highlight-link">917893319150</a>
+            </div>
+            <div class="tournament-details">
+              <b>Tournament Details</b>
+              <ul>
+                <li>Ball Type: <span class="highlight-red">Red Vickey cork ball</span> (teams' responsibility)</li>
+                <li>Live stream for every match</li>
+                <li>Man of the Match, Man of the Series, Best Bowler, Best Batsman trophies</li>
+                <li>Scores updated daily on <b>Cricheros app</b></li>
+                <li>Registrations open till <b>December 30</b></li>
+                <li>Ground Location: <a href="https://maps.app.goo.gl/t7ntBjnHX7bJ1CH87" target="_blank" class="highlight-link">View on Google Maps</a></li>
+              </ul>
+            </div>
+            <a href="https://chat.whatsapp.com/HsnFwhyhsat254jgflw4Yg?mode=hqrt3" target="_blank" class="whatsapp-btn">Click Here to Join our WhatsApp Group</a>
+          </div>
+        </div>
+      </div>
     <div id="spinWheelPublicSection" style="margin:32px auto 0 auto;max-width:420px;text-align:center;"></div>
+    <script>
+    // Tab switching logic
+    const tabContents = document.querySelectorAll('.tab-content');
+    const countdownContainer = document.getElementById('countdownContainer');
+    function showTab(tabId) {
+      tabContents.forEach(tab => tab.style.display = 'none');
+      const tab = document.getElementById(tabId);
+      if (tab) tab.style.display = '';
+      // Hide countdown if any tab is shown, show only on homepage
+      if (tabId) {
+        countdownContainer.style.display = 'none';
+      } else {
+        countdownContainer.style.display = '';
+      }
+    }
+    // Show countdown on page load (homepage)
+    if (countdownContainer) countdownContainer.style.display = '';
+    </script>
     <div id="addTeam" class="tab-content"></div>
     <div id="teamsRegistered" class="tab-content" style="display:none"></div>
     <div id="archives" class="tab-content" style="display:none">
