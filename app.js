@@ -416,9 +416,11 @@ function renderAddTeamForm() {
       <label>Captain Name: <input type="text" name="captain" required></label><br><br>
       <label>Captain Number: <input type="text" name="captainNumber" required></label><br><br>
       <div id="playersInputs"></div>
-      <button type="submit">Register Team</button>
+      <label>Player 11: <input type="text" name="player11" required></label><br><br>
+      <label>Player 12: <input type="text" name="player12" required></label><br><br>
+      <button type="submit" id="registerBtn" disabled>Register Team</button>
     </form>
-    <div id="teamFormMsg"></div>`;
+    <div id="teamFormMsg" style="color:red;"></div>`;
   const playersInputs = document.getElementById('playersInputs');
   let playersHtml = '';
   for(let i=1; i<=10; i++) {
@@ -426,26 +428,52 @@ function renderAddTeamForm() {
   }
   playersInputs.innerHTML = playersHtml;
 
-  document.getElementById('teamForm').onsubmit = async function(e) {
+  // Validation logic
+  const form = document.getElementById('teamForm');
+  const registerBtn = document.getElementById('registerBtn');
+  const teamFormMsg = document.getElementById('teamFormMsg');
+  function validateTeamForm() {
+    const teamName = form.teamName.value.trim();
+    const captain = form.captain.value.trim();
+    const captainNumber = form.captainNumber.value.trim();
+    let allPlayersFilled = true;
+    for(let i=1; i<=10; i++) {
+      if(!form[`player${i}`].value.trim()) allPlayersFilled = false;
+    }
+    if(!teamName || !captain || !captainNumber || !allPlayersFilled) {
+      registerBtn.disabled = true;
+      teamFormMsg.innerText = 'Please fill all the mandatory players.';
+    } else {
+      registerBtn.disabled = false;
+      teamFormMsg.innerText = '';
+    }
+  }
+  form.addEventListener('input', validateTeamForm);
+  validateTeamForm();
+
+  form.onsubmit = async function(e) {
     e.preventDefault();
-    const form = e.target;
     const teamName = form.teamName.value.trim();
     const captain = form.captain.value.trim();
     const captainNumber = form.captainNumber.value.trim();
     let players = [];
-    for(let i=1; i<=10; i++) {
+    for(let i=1; i<=12; i++) {
       players.push(form[`player${i}`].value.trim());
     }
-    if(!teamName || !captain || !captainNumber || players.some(p => !p)) {
-      document.getElementById('teamFormMsg').innerText = 'All fields are required!';
+    // Only check first 10 players for mandatory
+    if(!teamName || !captain || !captainNumber || players.slice(0,10).some(p => !p)) {
+      teamFormMsg.innerText = 'Please fill all the mandatory players.';
       return;
     }
     try {
       await database.ref('teams').push({ teamName, captain, captainNumber, players });
-      document.getElementById('teamFormMsg').innerText = 'Team registered successfully!';
+      teamFormMsg.style.color = 'green';
+      teamFormMsg.innerText = 'Team registered successfully!';
       form.reset();
+      validateTeamForm();
+      setTimeout(()=>{ teamFormMsg.innerText = ''; teamFormMsg.style.color = 'red'; }, 2000);
     } catch (err) {
-      document.getElementById('teamFormMsg').innerText = 'Error registering team.';
+      teamFormMsg.innerText = 'Error registering team.';
     }
   };
 }

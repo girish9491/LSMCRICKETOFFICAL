@@ -1,3 +1,82 @@
+  /* Tournament Details Tab Layout Fix */
+  .tournament-details-tab {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 40px;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 32px auto 0 auto;
+    max-width: 1200px;
+    background: rgba(0,0,0,0.55);
+    border-radius: 18px;
+    padding: 32px 32px 24px 32px;
+    box-shadow: 0 4px 32px #0006;
+  }
+  .tournament-prizes {
+    background: none;
+    color: #fff;
+    border-radius: 14px;
+    min-width: 260px;
+    max-width: 420px;
+    flex: 1 1 340px;
+    font-size: 1.13rem;
+    box-shadow: none;
+    margin: 0;
+    padding: 0 18px 0 18px;
+  }
+  .tournament-organisers {
+    background: none;
+    color: #fff;
+    border-radius: 14px;
+    min-width: 320px;
+    max-width: 600px;
+    flex: 2 1 520px;
+    font-size: 1.13rem;
+    box-shadow: none;
+    margin: 0;
+    padding: 0 28px 0 28px;
+  }
+  .tournament-prizes ul, .tournament-details ul {
+    margin: 8px 0 10px 0;
+    padding-left: 18px;
+  }
+  .tournament-prizes h3, .tournament-organisers h3 {
+    color: #ffe600;
+    font-size: 1.18rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 8px #000;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: keep-all;
+  }
+  .tournament-details {
+    margin-top: 18px;
+    font-size: 1.08rem;
+  }
+  .tournament-details b {
+    color: #ffe600;
+  }
+  .org-section {
+    margin-bottom: 10px;
+    color: #ff6666;
+    font-weight: bold;
+  }
+  @media (max-width: 1000px) {
+    .tournament-details-tab {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 18px 4vw 18px 4vw;
+      gap: 18px;
+    }
+    .tournament-prizes, .tournament-organisers {
+      min-width: 0;
+      max-width: 100%;
+      flex: 1 1 100%;
+      padding: 0 2vw;
+    }
+  }
   @media (max-width: 600px) {
     .countdown-container {
       gap: 8px;
@@ -42,7 +121,10 @@
     background: rgba(0,0,0,0.7);
     padding: 6px 0;
     margin-bottom: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  .tournament-prizes li, .tournament-details li {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     border-bottom: 2px solid #ffd700;
   }
   .marquee-content {
