@@ -15,6 +15,11 @@
   <!-- Overlayed Tournament Info Section -->
   <div class="container">
     <h1>Lingasamudram Cricket Tournament</h1>
+    <div class="top-marquee-bar">
+      <div class="marquee-content">
+        <strong>Tournament Entry & Prizes:</strong> Winners: <span class="highlight">₹50,000</span>, Runners: <span class="highlight">₹25,000/-</span> & Entry Fee: <span class="highlight">₹2000/-</span>. <strong>For Queries Contact, Organisers:</strong> Chandu <span class="highlight">8639015104</span>, Etish <span class="highlight">917893319150</span>
+      </div>
+    </div>
     <nav>
       <button onclick="showTab('addTeam')">Add Team</button>
       <button onclick="showTab('teamsRegistered')">Teams Registered</button>
@@ -25,58 +30,83 @@
       <button onclick="showTab('tournamentDetails')">Tournament Details</button>
       <button id="adminPanelBtn" onclick="openAdminPanel()">Admin Panel</button>
     </nav>
-      <!-- Tournament Details Tab -->
-      <div id="tournamentDetails" class="tab-content" style="display:none">
-        <div class="tournament-details-tab">
-          <div class="tournament-prizes">
-            <h3>Tournament Entry & Prizes</h3>
-            <div>Entry Fee: <span class="highlight">₹2000/-</span></div>
-            <div>Prize Money:</div>
+    <!-- Tab content containers directly after nav -->
+    <div id="addTeam" class="tab-content" style="display:none"></div>
+    <div id="teamsRegistered" class="tab-content" style="display:none"></div>
+    <div id="archives" class="tab-content" style="display:none">
+      <div id="archive-images" class="archive-tab-content"></div>
+      <div id="archive-videos" class="archive-tab-content"></div>
+    </div>
+    <div id="schedule" class="tab-content" style="display:none">
+      <h2>Schedule</h2>
+      <p>Coming soon...</p>
+    </div>
+    <div id="liveMatch" class="tab-content" style="display:none">
+      <h2>Live Match</h2>
+      <a href="https://www.youtube.com/@chlivestreaming13" target="_blank" class="live-match-btn">Click Here to Watch Live Match</a>
+    </div>
+    <div id="liveScore" class="tab-content" style="display:none">
+      <h2 style="color:#ffd700;font-size:2rem;margin-bottom:12px;">Live Score</h2>
+      <div style="background:#222;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.18);padding:18px 12px;max-width:420px;margin:0 auto;text-align:center;">
+        <p style="color:#ffd700;font-size:1.1rem;margin-bottom:16px;">Click below to view live scores for Lingasamudram Cricket Tournament 2026:</p>
+        <a href="https://cricheroes.com/tournament/1726202/lingasamudram-26th-cricket-tournament-2k26/matches/live-matches" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#ffd700 0%,#125ea2 100%);color:#222;font-weight:bold;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:1.15rem;box-shadow:0 2px 12px rgba(0,0,0,0.18);transition:background 0.2s;">View Live Scores</a>
+      </div>
+    </div>
+    <div id="tournamentDetails" class="tab-content" style="display:none">
+      <div class="tournament-details-tab">
+        <div class="tournament-prizes">
+          <h3>Tournament Entry & Prizes</h3>
+          <div>Entry Fee: <span class="highlight">₹2000/-</span></div>
+          <div>Prize Money:</div>
+          <ul>
+            <li>Winners: <span class="highlight">₹50,000/-</span></li>
+            <li>Runners: <span class="highlight">₹25,000/-</span></li>
+          </ul>
+        </div>
+        <div class="tournament-organisers">
+          <h3>Organisers & Tournament Details</h3>
+          <div class="org-section">
+            <b>Organisers</b><br>
+            Chandu : <a href="tel:8639015104" class="highlight-link">8639015104</a><br>
+            Etish : <a href="tel:917893319150" class="highlight-link">917893319150</a>
+          </div>
+          <div class="tournament-details">
+            <b>Tournament Details</b>
             <ul>
-              <li>Winners: <span class="highlight">₹50,000/-</span></li>
-              <li>Runners: <span class="highlight">₹25,000/-</span></li>
+              <li>Ball Type: <span class="highlight-red">Red Vickey cork ball</span> (teams' responsibility)</li>
+              <li>Live stream for every match</li>
+              <li>Man of the Match, Man of the Series, Best Bowler, Best Batsman trophies</li>
+              <li>Scores updated daily on <b>Cricheros app</b></li>
+              <li>Registrations open till <b>December 30</b></li>
+              <li>Ground Location: <a href="https://maps.app.goo.gl/t7ntBjnHX7bJ1CH87" target="_blank" class="highlight-link">View on Google Maps</a></li>
             </ul>
           </div>
-          <div class="tournament-organisers">
-            <h3>Organisers & Tournament Details</h3>
-            <div class="org-section">
-              <b>Organisers</b><br>
-              Chandu : <a href="tel:8639015104" class="highlight-link">8639015104</a><br>
-              Etish : <a href="tel:917893319150" class="highlight-link">917893319150</a>
-            </div>
-            <div class="tournament-details">
-              <b>Tournament Details</b>
-              <ul>
-                <li>Ball Type: <span class="highlight-red">Red Vickey cork ball</span> (teams' responsibility)</li>
-                <li>Live stream for every match</li>
-                <li>Man of the Match, Man of the Series, Best Bowler, Best Batsman trophies</li>
-                <li>Scores updated daily on <b>Cricheros app</b></li>
-                <li>Registrations open till <b>December 30</b></li>
-                <li>Ground Location: <a href="https://maps.app.goo.gl/t7ntBjnHX7bJ1CH87" target="_blank" class="highlight-link">View on Google Maps</a></li>
-              </ul>
-            </div>
-            <a href="https://chat.whatsapp.com/HsnFwhyhsat254jgflw4Yg?mode=hqrt3" target="_blank" class="whatsapp-btn">Click Here to Join our WhatsApp Group</a>
-          </div>
+          <a href="https://chat.whatsapp.com/HsnFwhyhsat254jgflw4Yg?mode=hqrt3" target="_blank" class="whatsapp-btn">Click Here to Join our WhatsApp Group</a>
         </div>
       </div>
+    </div>
     <div id="spinWheelPublicSection" style="margin:32px auto 0 auto;max-width:420px;text-align:center;"></div>
     <script>
     // Tab switching logic
     const tabContents = document.querySelectorAll('.tab-content');
     const countdownContainer = document.getElementById('countdownContainer');
+    const spinWheelSection = document.getElementById('spinWheelPublicSection');
     function showTab(tabId) {
       tabContents.forEach(tab => tab.style.display = 'none');
       const tab = document.getElementById(tabId);
       if (tab) tab.style.display = '';
-      // Hide countdown if any tab is shown, show only on homepage
+      // Hide countdown and spin wheel if any tab is shown, show only on homepage
       if (tabId) {
-        countdownContainer.style.display = 'none';
+        if (countdownContainer) countdownContainer.style.display = 'none';
+        if (spinWheelSection) spinWheelSection.style.display = 'none';
       } else {
-        countdownContainer.style.display = '';
+        if (countdownContainer) countdownContainer.style.display = '';
+        if (spinWheelSection) spinWheelSection.style.display = '';
       }
     }
-    // Show countdown on page load (homepage)
+    // Show countdown and spin wheel on page load (homepage)
     if (countdownContainer) countdownContainer.style.display = '';
+    if (spinWheelSection) spinWheelSection.style.display = '';
     </script>
     <div id="addTeam" class="tab-content"></div>
     <div id="teamsRegistered" class="tab-content" style="display:none"></div>
@@ -90,7 +120,7 @@
     </div>
     <div id="liveMatch" class="tab-content" style="display:none">
       <h2>Live Match</h2>
-      <a href="https://www.youtube.com/@chlivestreaming13" target="_blank">Click Here to Watch Live Match</a>
+      <a href="https://www.youtube.com/@chlivestreaming13" target="_blank" class="live-match-btn">Click Here to Watch Live Match</a>
       </div>
       <div id="liveScore" class="tab-content" style="display:none">
         <h2 style="color:#ffd700;font-size:2rem;margin-bottom:12px;">Live Score</h2>

@@ -1,3 +1,150 @@
+  /* Tournament Details Tab Layout Fix */
+  .tournament-details-tab {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 40px;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 32px auto 0 auto;
+    max-width: 1200px;
+    background: rgba(0,0,0,0.55);
+    border-radius: 18px;
+    padding: 32px 32px 24px 32px;
+    box-shadow: 0 4px 32px #0006;
+  }
+  .tournament-prizes {
+    background: none;
+    color: #fff;
+    border-radius: 14px;
+    min-width: 260px;
+    max-width: 420px;
+    flex: 1 1 340px;
+    font-size: 1.13rem;
+    box-shadow: none;
+    margin: 0;
+    padding: 0 18px 0 18px;
+  }
+  .tournament-organisers {
+    background: none;
+    color: #fff;
+    border-radius: 14px;
+    min-width: 320px;
+    max-width: 600px;
+    flex: 2 1 520px;
+    font-size: 1.13rem;
+    box-shadow: none;
+    margin: 0;
+    padding: 0 28px 0 28px;
+  }
+  .tournament-prizes ul, .tournament-details ul {
+    margin: 8px 0 10px 0;
+    padding-left: 18px;
+  }
+  .tournament-prizes h3, .tournament-organisers h3 {
+    color: #ffe600;
+    font-size: 1.18rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 8px #000;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: keep-all;
+  }
+  .tournament-details {
+    margin-top: 18px;
+    font-size: 1.08rem;
+  }
+  .tournament-details b {
+    color: #ffe600;
+  }
+  .org-section {
+    margin-bottom: 10px;
+    color: #ff6666;
+    font-weight: bold;
+  }
+  @media (max-width: 1000px) {
+    .tournament-details-tab {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 18px 4vw 18px 4vw;
+      gap: 18px;
+    }
+    .tournament-prizes, .tournament-organisers {
+      min-width: 0;
+      max-width: 100%;
+      flex: 1 1 100%;
+      padding: 0 2vw;
+    }
+  }
+  @media (max-width: 600px) {
+    .countdown-container {
+      gap: 8px;
+      padding: 0 2vw;
+      max-width: 100vw;
+      flex-wrap: wrap;
+      overflow-x: auto;
+    }
+    .countdown-box {
+      min-width: 40px;
+      max-width: 70px;
+      padding: 8px 6px 4px 6px;
+      font-size: 0.8rem;
+    }
+    .countdown-box .countdown-value {
+      font-size: 1rem;
+    }
+    .countdown-box .countdown-label {
+      font-size: 0.7rem;
+    }
+    .countdown-box:nth-child(3),
+    .countdown-box:nth-child(4) {
+      display: none !important;
+    }
+  }
+  .countdown-box.small {
+    min-width: 70px;
+    padding: 10px 12px 6px 12px;
+    border-radius: 16px;
+    font-size: 0.95rem;
+  }
+  .countdown-box.small .countdown-value {
+    font-size: 1.3rem;
+  }
+  .countdown-box.small .countdown-label {
+    font-size: 0.85rem;
+  }
+  /* Top marquee bar for tournament info */
+  .top-marquee-bar {
+    width: 100%;
+    overflow: hidden;
+    background: rgba(0,0,0,0.7);
+    padding: 6px 0;
+    margin-bottom: 8px;
+}
+
+/* Remove nowrap/ellipsis to prevent horizontal scroll on lists */
+.tournament-prizes li, .tournament-details li {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  border-bottom: 2px solid #ffd700;
+}
+  .marquee-content {
+    display: inline-block;
+    min-width: 100vw;
+    white-space: nowrap;
+    font-weight: bold;
+    font-size: 1.08rem;
+    color: #ffd700;
+    letter-spacing: 1px;
+    animation: marquee-scroll 18s linear infinite;
+    will-change: transform;
+  }
+  @keyframes marquee-scroll {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
   /* Live Match red button style */
   /* Live Match button styled like Live Score */
   .live-match-btn {
@@ -24,26 +171,30 @@
     justify-content: center;
     align-items: center;
     gap: 24px;
-    margin: 0 auto 18px auto;
-    max-width: 700px;
+      margin: 0 auto 18px auto;
+      max-width: 100vw;
+      flex-wrap: wrap;
+      overflow-x: auto;
   }
+  /* Compact countdown timer */
   .countdown-box {
     background: rgba(0,0,0,0.85);
-    border-radius: 24px;
-    padding: 18px 22px 10px 22px;
-    min-width: 90px;
+    border-radius: 18px;
+    padding: 10px 12px 6px 12px;
+    min-width: 60px;
+    max-width: 80px;
     text-align: center;
-    margin: 0 6px;
-    box-shadow: 0 2px 12px #0008;
+    margin: 0 4px;
+    box-shadow: 0 2px 8px #0008;
   }
   .countdown-box .countdown-value {
-    font-size: 2.2rem;
+    font-size: 1.3rem;
     color: #00eaff;
     font-weight: bold;
     margin-bottom: 2px;
   }
   .countdown-box .countdown-label {
-    font-size: 1.05rem;
+    font-size: 0.85rem;
     color: #bbb;
     font-weight: 600;
     letter-spacing: 1px;
@@ -221,9 +372,31 @@
   background: rgba(0,0,0,0.60);
   color: #fff;
   border-radius: 18px;
-  padding: 24px 28px 18px 28px;
-  max-width: 340px;
+    min-width: 48px;
+    max-width: 90px;
+    flex: 1 1 60px;
   font-size: 1.15rem;
+  @media (max-width: 600px) {
+    .countdown-container {
+      gap: 8px;
+      padding: 0 2vw;
+      max-width: 100vw;
+      flex-wrap: wrap;
+      overflow-x: auto;
+    }
+    .countdown-box {
+      min-width: 40px;
+      max-width: 70px;
+      padding: 8px 6px 4px 6px;
+      font-size: 0.8rem;
+    }
+    .countdown-box .countdown-value {
+      font-size: 1rem;
+    }
+    .countdown-box .countdown-label {
+      font-size: 0.7rem;
+    }
+  }
   box-shadow: 0 0 16px #0008;
   pointer-events: auto;
 }
