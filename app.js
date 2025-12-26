@@ -184,6 +184,8 @@ function openAdminPanel() {
 
 function closeAdminPanel() {
   document.getElementById('adminPanelModal').style.display = 'none';
+  // Note: Keep Teams Registered button visible if admin is logged in
+  // Button visibility is controlled by login state, not panel state
 }
 
 function verifyAdminPincode() {
@@ -192,11 +194,17 @@ function verifyAdminPincode() {
     isAdmin = true;
     document.getElementById('adminPincodeSection').style.display = 'none';
     document.getElementById('adminControls').style.display = 'block';
+    // Show Teams Registered button for admin
+    const teamsRegisteredBtn = document.getElementById('teamsRegisteredBtn');
+    if (teamsRegisteredBtn) teamsRegisteredBtn.style.display = '';
     renderAdminFeatures();
   } else {
     document.getElementById('adminPincodeError').innerText = 'Incorrect pincode!';
     isAdmin = false;
     document.getElementById('adminControls').style.display = 'none';
+    // Hide Teams Registered button if login fails
+    const teamsRegisteredBtn = document.getElementById('teamsRegisteredBtn');
+    if (teamsRegisteredBtn) teamsRegisteredBtn.style.display = 'none';
   }
 }
 

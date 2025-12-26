@@ -21,8 +21,11 @@
       </div>
     </div>
     <nav>
-      <button onclick="showTab('addTeam')">Add Team</button>
-      <button onclick="showTab('teamsRegistered')">Teams Registered</button>
+      <!-- Add Team button - hidden until December 5th, 2026 -->
+      <!-- <button onclick="showTab('addTeam')">Add Team</button> -->
+      <button id="addTeamBtn" onclick="showTab('addTeam')" style="display:none;">Add Team</button>
+      <!-- Teams Registered button - visible only for admin -->
+      <button id="teamsRegisteredBtn" onclick="showTab('teamsRegistered')" style="display:none;">Teams Registered</button>
       <button onclick="showTab('archives')">Archives</button>
       <button onclick="showTab('schedule')">Schedule</button>
       <button onclick="showTab('liveMatch')">Match Live</button>
@@ -87,6 +90,20 @@
     </div>
     <div id="spinWheelPublicSection" style="margin:32px auto 0 auto;max-width:420px;text-align:center;"></div>
     <script>
+    // Check date and enable Add Team button if on or after December 5, 2026
+    (function() {
+      const targetDate = new Date('2026-12-05T00:00:00');
+      const currentDate = new Date();
+      const addTeamBtn = document.getElementById('addTeamBtn');
+      
+      if (currentDate >= targetDate) {
+        // Enable the Add Team button
+        if (addTeamBtn) {
+          addTeamBtn.style.display = '';
+        }
+      }
+    })();
+    
     // Tab switching logic
     const tabContents = document.querySelectorAll('.tab-content');
     const countdownContainer = document.getElementById('countdownContainer');
